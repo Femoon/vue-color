@@ -32,8 +32,9 @@
         <ed-in label="b" :value="colors.rgba.b" @change="inputChange"></ed-in>
       </div>
       <div class="vc-sketch-field--single" v-if="!disableAlpha">
-        <ed-in label="a" :value="colors.a" :arrow-offset="0.01" :max="1" @change="inputChange"></ed-in>
+        <ed-in label="a" :value="alpha" :arrow-offset="0.01" :max="100" @change="inputChange"></ed-in>
       </div>
+      <div style="font-size: 10px;margin-top: 3px;" v-if="!disableAlpha">%</div>
     </div>
     <div class="vc-sketch-presets" role="group" aria-label="A color preset, pick one to set as current color">
       <template v-for="c in presetColors">
@@ -54,6 +55,10 @@
           <checkboard />
         </div>
       </template>
+    </div>
+    <div class="operator-container">
+      <button class="operator-cancel" @click="handleClear">清空</button>
+      <button class="operator-confirm" @click="handleConfirm">确定</button>
     </div>
   </div>
 </template>
@@ -97,21 +102,23 @@ export default {
     disableFields: {
       type: Boolean,
       default: false
-    }
+    },
   },
   computed: {
-    hex () {
-      let hex
-      if (this.colors.a < 1) {
-        hex = this.colors.hex8
-      } else {
-        hex = this.colors.hex
+    alpha: {
+      get() {
+        return this.colors.a * 100
+      },
+      set(value) {
+        return value / 100
       }
-      return hex.replace('#', '')
+    },
+    hex () {
+      return this.colors.hex
     },
     activeColor () {
       var rgba = this.colors.rgba
-      return 'rgba(' + [rgba.r, rgba.g, rgba.b, rgba.a].join(',') + ')'
+      return 'rgba(' + [rgba.r, rgba.g, rgba.b, rgba.a ].join(',') + ')'
     }
   },
   methods: {
@@ -121,16 +128,24 @@ export default {
         source: 'hex'
       })
     },
+    handleClear() {
+      this.$emit('clearColor') 
+    },
+    handleConfirm() {
+      this.$emit('confirmColor')
+    },
     childChange (data) {
       this.colorChange(data)
     },
     inputChange (data) {
+      data.a = data.a / 100
       if (!data) {
         return
       }
       if (data.hex) {
         this.isValidHex(data.hex) && this.colorChange({
           hex: data.hex,
+          // a: data.a || this.colors.rgba.a ,
           source: 'hex'
         })
       } else if (data.r || data.g || data.b || data.a) {
@@ -138,7 +153,7 @@ export default {
           r: data.r || this.colors.rgba.r,
           g: data.g || this.colors.rgba.g,
           b: data.b || this.colors.rgba.b,
-          a: data.a || this.colors.rgba.a,
+          a: data.a || this.colors.rgba.a ,
           source: 'rgba'
         })
       }
@@ -150,7 +165,7 @@ export default {
 <style>
 .vc-sketch {
   position: relative;
-  width: 200px;
+  width: 225px;
   padding: 10px 10px 0;
   box-sizing: initial;
   background: #fff;
@@ -275,5 +290,50 @@ export default {
 
 .vc-sketch__disable-alpha .vc-sketch-color-wrap {
   height: 10px;
+}
+
+.operator-container {
+  display: flex;
+  justify-content: end;
+}
+
+.operator-container .operator-cancel{
+  margin-left: 10px;
+  height: 28px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 28px;
+  cursor: pointer;
+  background-color: transparent;
+  color:#409eff;
+  border: none;
+}
+
+.operator-container .operator-cancel:hover{
+  color:#66b1ff;
+}
+.operator-container .operator-confirm{
+  margin-left: 10px;
+  width: 56px;
+  height: 28px;
+  border: 1px solid rgb(220,223,230);
+  border-radius: 3px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+  color:rgb(96,98,102);
+  background-color: #fff;
+}
+
+.operator-container .operator-confirm:hover{
+  background: #fff;
+  border-color: #409eff;
+  color: #409eff;
+  transition: all 0.5s;
+}
+.operator-container .operator-confirm:active{
+  background: #fff;
+  border-color: #409eff;
+  color: #409eff;
 }
 </style>

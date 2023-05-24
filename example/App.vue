@@ -10,25 +10,25 @@
             <p role="presentation">A Collection of Color Pickers from Sketch, Photoshop, Chrome, Github, Twitter, Material Design & more</p>
           </div>
         </div>
-        <div class="demo-item">
+        <!-- <div class="demo-item">
           <chrome-picker :value="colors" @input="updateValue"></chrome-picker>
           <h2>Chrome</h2>
-        </div>
+        </div> -->
       </div>
     </div>
 
     <div class="demo-container">
       <div class="demo-list">
         <div class="demo-item">
-          <sketch-picker v-model="colors"></sketch-picker>
+          <sketch-picker v-model="colors" disableAlpha></sketch-picker>
           <h2>Sketch</h2>
         </div>
-        <div class="demo-item">
+        <!-- <div class="demo-item">
           <photoshop-picker v-model="colors" @ok="onOk" @cancel="onCancel"></photoshop-picker>
           <h2>Photoshop</h2>
-        </div>
+        </div> -->
       </div>
-      <div class="demo-list">
+      <!-- <div class="demo-list">
         <div class="demo-item">
           <material-picker v-model="colors"></material-picker>
           <h2>Material</h2>
@@ -57,7 +57,7 @@
           <twitter-picker :value="colors" @input="updateValue"></twitter-picker>
           <h2>Twitter</h2>
         </div>
-      </div>
+      </div> -->
 
     </div>
   </div>
@@ -69,10 +69,11 @@ import compact from '../src/components/Compact.vue'
 import grayscale from '../src/components/Grayscale.vue'
 import swatches from '../src/components/Swatches.vue'
 import slider from '../src/components/Slider.vue'
-import sketch from '../src/components/Sketch.vue'
+import Sketch from '../src/components/Sketch.vue'
 import chrome from '../src/components/Chrome.vue'
-import photoshop from '../src/components/Photoshop.vue'
+// import photoshop from '../src/components/Photoshop.vue'
 import twitter from '../src/components/Twitter.vue'
+// import { Sketch } from '../dist/vue-color.min';
 
 let defaultProps = {
   hex: '#194d33e6',
@@ -99,15 +100,15 @@ let defaultProps = {
 
 export default {
   components: {
-    'material-picker': material,
-    'compact-picker': compact,
-    'grayscale-picker': grayscale,
-    'swatches-picker': swatches,
-    'slider-picker': slider,
-    'sketch-picker': sketch,
-    'chrome-picker': chrome,
-    'photoshop-picker': photoshop,
-    'twitter-picker': twitter
+    // 'material-picker': material,
+    // 'compact-picker': compact,
+    // 'grayscale-picker': grayscale,
+    // 'swatches-picker': swatches,
+    // 'slider-picker': slider,
+    'sketch-picker': Sketch,
+    // 'chrome-picker': chrome,
+    // 'photoshop-picker': photoshop,
+    // 'twitter-picker': twitter
   },
   data () {
     return {
@@ -116,7 +117,8 @@ export default {
   },
   computed: {
     bgc () {
-      return this.colors.hex
+      const rgba = this.colors.rgba
+      return 'rgba(' + [rgba.r, rgba.g, rgba.b, rgba.a ].join(',') + ')'
     }
   },
   methods: {
